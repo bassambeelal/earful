@@ -10,3 +10,6 @@ export declare const ENGINE_INFO: Record<EngineId, EngineInfo>
 
 /** Returns the engine singleton for `id`. */
 export declare function getEngine(id: EngineId): TtsEngine
+
+/** Check an engine works (key valid, server reachable) with a tiny request. Never throws. */
+export declare function testEngine(id: EngineId): Promise<{ ok: boolean; message: string }>
