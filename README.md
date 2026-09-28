@@ -13,7 +13,12 @@ It's a free, open-source alternative to paid text-to-speech readers like Speechi
 
 </div>
 
-![Earful reading a document with word highlighting](docs/screenshot.png)
+![Earful reading a document with sentence and word highlighting](docs/screenshot.png)
+
+<p align="center">
+  <img src="docs/library.png" width="68%" alt="Your library of documents with progress" />
+  <img src="docs/mobile.png" width="22%" alt="Earful on a phone in dark mode" />
+</p>
 
 ## Why
 
@@ -24,7 +29,7 @@ The popular reading apps lock the basics behind a subscription of around $139 a 
 | Natural-sounding voices | Premium only | **Free** (on-device neural voices) |
 | Listening speed | Capped at 1.5× | **0.5× – 4×** |
 | Library size | A few files | **Unlimited** |
-| Scanned PDFs & photos (OCR) | Premium only | **Free, on-device** |
+| Scanned PDFs & photos (text recognition) | Premium only | **Free, on-device** |
 | Offline listening | Premium only | **Free** (installable app) |
 | Download as MP3 | Premium only | **Free** |
 | AI summaries, quizzes, chat | Premium only | **Free with your own key** |
@@ -33,11 +38,11 @@ The popular reading apps lock the basics behind a subscription of around $139 a 
 
 ## Features
 
-- **Import almost anything**: PDF (including scanned PDFs), EPUB, Word (.docx), text, Markdown, web pages you paste, and photos of pages (on-device OCR, 100+ languages).
+- **Import almost anything**: PDF (including scanned PDFs), EPUB, Word (.docx), text, Markdown, web pages you paste, and photos of pages (on-device text recognition).
 - **Word-by-word highlighting** with auto-scroll. Click any sentence to jump there.
 - **Three kinds of voices**
   - **Browser voices**: instant and free. On Microsoft Edge these include the very natural "Online (Natural)" voices at no cost.
-  - **Natural voices (offline)**: the Kokoro neural voice model runs entirely in your browser (about 90 MB, downloaded once). There's no key, no server, and after the first download it works with no internet at all.
+  - **Natural voices (offline)**: the Kokoro neural voice model runs entirely in your browser on your graphics chip (WebGPU), downloaded once (about 330 MB). There's no key, no server, and after the first download it works with no internet at all. Browsers without WebGPU get a smaller 92 MB version that's great for saving audio files but may pause while listening live.
   - **Premium voices with your own key**: OpenAI, Google Gemini, ElevenLabs, Groq, or any OpenAI-compatible server (for example Kokoro-FastAPI). You pay the provider directly, at cost, instead of a subscription. Audio is cached, so you never pay twice for the same sentence.
 - **Smart skipping** of citations like [12] and (Smith, 2020), URLs, running headers, footers and page numbers.
 - **Speed from 0.5× to 4×** with pitch preserved, a sleep timer, lock-screen and headphone controls.

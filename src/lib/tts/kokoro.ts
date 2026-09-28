@@ -18,6 +18,8 @@ export const useKokoroStatus: UseBoundStore<StoreApi<KokoroStatus>> = create<Kok
 const setStatus = (patch: Partial<KokoroStatus>) => useKokoroStatus.setState(patch)
 
 interface Pending {
+  text: string
+  voice: string
   resolve: (r: SynthResult) => void
   reject: (e: unknown) => void
 }
@@ -30,6 +32,64 @@ const pending = new Map<number, Pending>()
 
 function send(msg: ToWorker) {
   worker?.postMessage(msg)
+}
+
+// ---------------------------------------------------------------------------
+// Watchdog. The GPU can stall (tab hidden, device lost after sleep, driver reset) and a stalled
+// ONNX session never answers again. If the worker goes quiet while passages are waiting, restart
+// it from the cached model and resend them; after a second GPU stall fall back to WASM.
+// ---------------------------------------------------------------------------
+
+const STALL_MS = { webgpu: 20_000, wasm: 90_000 }
+const MAX_RESTARTS = 3
+let lastActivity = 0
+let watchdog: ReturnType<typeof setInterval> | null = null
+let restarts = 0
+let forcedDevice: 'wasm' | null = null
+
+function touch() {
+  lastActivity = performance.now()
+}
+
+function armWatchdog() {
+  if (watchdog) return
+  watchdog = setInterval(() => {
+    if (!pending.size) {
+      clearInterval(watchdog!)
+      watchdog = null
+      return
+    }
+    const { state, device } = useKokoroStatus.getState()
+    if (state !== 'ready') return
+    if (performance.now() - lastActivity > STALL_MS[device === 'webgpu' ? 'webgpu' : 'wasm']) recoverFromStall()
+  }, 5_000)
+}
+
+function recoverFromStall() {
+  const wasGpu = useKokoroStatus.getState().device === 'webgpu'
+  restarts++
+  if (restarts > MAX_RESTARTS) {
+    const message = 'Natural voices stopped responding. Reload the page, or switch to another voice.'
+    setStatus({ ...IDLE, state: 'error', error: message })
+    teardown(new Error(message))
+    return
+  }
+  if (wasGpu && restarts >= 2) forcedDevice = 'wasm'
+  // Drop the stuck worker but keep the waiting passages; they are resent once the new one is ready.
+  worker?.terminate()
+  worker = null
+  loadPromise = null
+  loadSettle = null
+  touch()
+  loadKokoro().then(
+    () => {
+      touch()
+      for (const [id, p] of pending) send({ type: 'generate', id, text: p.text, voice: p.voice })
+    },
+    () => {
+      /* loadKokoro already failed everything that was waiting */
+    },
+  )
 }
 
 /** Stop the worker and fail everything in flight with `err`. */
@@ -45,6 +105,7 @@ function teardown(err: Error) {
 }
 
 function onMessage(msg: FromWorker) {
+  touch()
   switch (msg.type) {
     case 'progress':
       setStatus({ state: 'downloading', progress: msg.total ? Math.min(1, msg.loaded / msg.total) : 0, loaded: msg.loaded, total: msg.total })
@@ -65,6 +126,7 @@ function onMessage(msg: FromWorker) {
       const p = pending.get(msg.id)
       if (!p) return
       pending.delete(msg.id)
+      restarts = 0
       p.resolve({ blob: encodeWav(msg.audio, msg.sampleRate), duration: msg.audio.length / msg.sampleRate })
       return
     }
@@ -118,12 +180,14 @@ export function loadKokoro(): Promise<void> {
         : 'Natural voices stopped unexpectedly. Try loading them again.',
     )
   }
-  send({ type: 'load', device: getSettings().kokoro.device })
+  send({ type: 'load', device: forcedDevice ?? getSettings().kokoro.device })
   return p
 }
 
 /** Terminate the worker and free memory (model stays cached on disk). */
 export function unloadKokoro(): void {
+  restarts = 0
+  forcedDevice = null
   teardown(new Error('Natural voices were turned off.'))
   setStatus({ ...IDLE })
 }
@@ -184,6 +248,9 @@ async function synthesize(text: string, voice: string, signal: AbortSignal): Pro
   }
   if (!text.trim()) return { blob: encodeWav(new Float32Array(2400), 24000), duration: 0.1 }
   const id = nextId++
+  const sendVoice = KOKORO_VOICE_IDS.has(voice) ? voice : KOKORO_DEFAULT_VOICE
+  if (!pending.size) touch()
+  armWatchdog()
   return new Promise<SynthResult>((resolve, reject) => {
     const onAbort = () => {
       pending.delete(id)
@@ -192,6 +259,8 @@ async function synthesize(text: string, voice: string, signal: AbortSignal): Pro
     }
     signal.addEventListener('abort', onAbort, { once: true })
     pending.set(id, {
+      text,
+      voice: sendVoice,
       resolve: (r) => {
         signal.removeEventListener('abort', onAbort)
         resolve(r)
@@ -201,7 +270,7 @@ async function synthesize(text: string, voice: string, signal: AbortSignal): Pro
         reject(e)
       },
     })
-    send({ type: 'generate', id, text, voice: KOKORO_VOICE_IDS.has(voice) ? voice : KOKORO_DEFAULT_VOICE })
+    send({ type: 'generate', id, text, voice: sendVoice })
   })
 }
 

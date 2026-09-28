@@ -16,15 +16,18 @@ export function KokoroCard() {
 
   if (st.state === 'ready') {
     return (
-      <div className="kokoro kokoro--ready">
-        <CircleCheck className="kokoro__icon" aria-hidden />
-        <div className="kokoro__text">
-          <strong>Natural voices are ready</strong>
-          <span>
-            Running on this device{st.device ? ` with ${st.device === 'webgpu' ? 'WebGPU' : 'WebAssembly'}` : ''}. They work offline.
-          </span>
+      <>
+        <div className="kokoro kokoro--ready">
+          <CircleCheck className="kokoro__icon" aria-hidden />
+          <div className="kokoro__text">
+            <strong>Natural voices are ready</strong>
+            <span>
+              Running on this device{st.device ? ` with ${st.device === 'webgpu' ? 'WebGPU' : 'WebAssembly'}` : ''}. They work offline.
+            </span>
+          </div>
         </div>
-      </div>
+        {st.device === 'wasm' && <SlowDeviceNote />}
+      </>
     )
   }
 
@@ -60,15 +63,31 @@ export function KokoroCard() {
   }
 
   return (
-    <div className="kokoro">
-      <Download className="kokoro__icon" aria-hidden />
-      <div className="kokoro__text">
-        <strong>Download free natural voices (~{Math.round(kokoroDownloadSizeMB())} MB, one time)</strong>
-        <span>Human-sounding voices that run on your device and work offline. No account or key needed.</span>
+    <>
+      <div className="kokoro">
+        <Download className="kokoro__icon" aria-hidden />
+        <div className="kokoro__text">
+          <strong>Download free natural voices (~{Math.round(kokoroDownloadSizeMB())} MB, one time)</strong>
+          <span>Human-sounding voices that run on your device and work offline. No account or key needed.</span>
+        </div>
+        <Button variant="primary" onClick={load}>
+          Download
+        </Button>
       </div>
-      <Button variant="primary" onClick={load}>
-        Download
-      </Button>
-    </div>
+      {!hasWebGpu() && <SlowDeviceNote />}
+    </>
+  )
+}
+
+const hasWebGpu = () => typeof navigator !== 'undefined' && 'gpu' in navigator
+
+/** Without WebGPU the model runs on one CPU core: fine for saving audio files, often too slow to listen live. */
+function SlowDeviceNote() {
+  return (
+    <Callout tone="warning">
+      {hasWebGpu()
+        ? 'Natural voices are running without your graphics chip, so they may pause often while you listen. Choose WebGPU in Settings for smooth playback.'
+        : 'This browser can’t use your graphics chip, so natural voices may pause often while you listen. They still work well for saving audio files. For live listening, browser voices or a premium voice will be smoother.'}
+    </Callout>
   )
 }

@@ -229,7 +229,7 @@ function EngineVoices({ engineId, onDone }: { engineId: EngineId; onDone: () => 
                 <ul className="ev__list">
                   {g.voices.map((v) => {
                     const selected = current === engineId && selectedVoice === v.id
-                    const meta = [v.description, v.lang ? languageName(v.lang) : null, v.local && engineId === 'browser' ? 'On device' : null].filter(Boolean).join(' · ')
+                    const meta = [v.description, v.lang ? languageName(v.lang) : null].filter(Boolean).join(' · ')
                     return (
                       <li key={v.id} className={cx('voice-row', selected && 'voice-row--selected')}>
                         <button type="button" className="voice-row__main" aria-pressed={selected} onClick={() => choose(v)} onDoubleClick={onDone}>

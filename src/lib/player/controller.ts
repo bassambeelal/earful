@@ -394,7 +394,7 @@ async function speechLoop(r: Run, engine: SpeechEngine, voice: string | undefine
     i = nextPlayable(plan, i + 1)
     if (i >= 0 && plan.sentences[i].block !== sentence.block) await delay(paragraphPauseMs(), signal)
   }
-  completeRun(r, prev >= 0 ? prev : start)
+  completeRun(r)
 }
 
 function speakSentence(r: Run, engine: SpeechEngine, voice: string | undefined, i: number, spoken: SpokenText): Promise<void> {
@@ -516,7 +516,7 @@ async function synthLoop(r: Run, engineId: EngineId, engine: SynthEngine, voice:
     prev = item.chunk.parts[item.chunk.parts.length - 1].sentence
     if (item.chunk.blockEnd && (queue.length || cursor >= 0)) await delay(paragraphPauseMs(), signal)
   }
-  completeRun(r, prev >= 0 ? prev : start)
+  completeRun(r)
 }
 
 /** Play one chunk, moving the sentence/word highlight along with the audio clock. */

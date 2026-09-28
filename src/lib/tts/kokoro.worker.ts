@@ -3,7 +3,7 @@
 // ('transformers-cache'); voice embeddings by kokoro-js in 'kokoro-voices'.
 
 import { KokoroTTS, env } from 'kokoro-js'
-import type { ProgressInfo } from '@huggingface/transformers'
+import { env as hfEnv, type ProgressInfo } from '@huggingface/transformers'
 import {
   KOKORO_EXTRA_BYTES,
   KOKORO_FILES,
@@ -40,6 +40,8 @@ interface GpuLike {
 // reference (dist/assets/ort-wasm-simd-threaded.jsep-[hash].wasm): same origin, same version,
 // and cached by the service worker for offline use. Verified with `vite build` (Vite 8).
 env.wasmPaths = undefined as unknown as typeof env.wasmPaths
+// ONNX Runtime logs harmless graph-placement warnings through console.error; keep real errors only.
+;(hfEnv.backends.onnx as { logLevel?: string }).logLevel = 'error'
 
 const scope = self as unknown as WorkerScope
 const post = (msg: FromWorker, transfer?: Transferable[]) => scope.postMessage(msg, transfer ?? [])

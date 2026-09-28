@@ -12,7 +12,6 @@ import {
   detectKind,
   isOleContainer,
   kindFromMime,
-  sniffKind,
 } from './detect'
 import { importHtmlString, titleFromUrl } from './html'
 import { importTextString } from './text'

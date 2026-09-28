@@ -1,7 +1,25 @@
 {
   "name": "earful",
-  "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "Free, open-source text-to-speech reader: listen to PDFs, books, articles and photos of text with natural voices. Private and offline.",
+  "license": "GPL-3.0-only",
+  "homepage": "https://bassambeelal.github.io/earful/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bassambeelal/earful.git"
+  },
+  "keywords": [
+    "text-to-speech",
+    "tts",
+    "reader",
+    "pdf",
+    "epub",
+    "ocr",
+    "kokoro",
+    "accessibility",
+    "pwa",
+    "byok"
+  ],
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -38,5 +56,6 @@
     "typescript": "~6.0.2",
     "vite": "^8.3.0",
     "vite-plugin-pwa": "^1.3.0"
-  }
+  },
+  "private": true
 }

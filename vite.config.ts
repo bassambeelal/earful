@@ -65,10 +65,22 @@ export default defineConfig({
         },
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,woff,woff2,wasm,mjs,json}'],
-        maximumFileSizeToCacheInBytes: 40 * 1024 * 1024,
+        globPatterns: ['**/*.{js,css,html,svg,png,woff2,mjs,json}'],
+        // The offline-voice runtime (~22 MB) is only fetched by people who turn natural voices on;
+        // it is cached on first use below instead of being downloaded by every visitor.
+        globIgnores: ['**/ort-wasm*', '**/kokoro.worker*', '**/og-image.png'],
+        maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
         navigateFallback: 'index.html',
         runtimeCaching: [
+          {
+            urlPattern: /\/assets\/(?:ort-wasm|kokoro\.worker)[^/]*$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'earful-voice-runtime',
+              expiration: { maxEntries: 10 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
           {
             // ONNX Runtime + Tesseract runtimes
             urlPattern: /^https:\/\/cdn\.jsdelivr\.net\/.*/i,
