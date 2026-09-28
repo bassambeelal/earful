@@ -61,12 +61,12 @@ export interface Settings {
 
 export const DEFAULT_SETTINGS: Settings = {
   engine: 'browser',
-  voices: { kokoro: 'af_heart', openai: 'coral', gemini: 'Kore', groq: 'autumn', custom: 'af_heart' },
+  voices: { kokoro: 'af_heart', openai: 'marin', gemini: 'Kore', groq: 'autumn', custom: 'af_heart' },
   rate: 1,
   keys: {},
   ttsModels: {
     openai: 'gpt-4o-mini-tts',
-    gemini: 'gemini-2.5-flash-preview-tts',
+    gemini: 'gemini-3.8-flash-lite-tts',
     elevenlabs: 'eleven_flash_v2_5',
     groq: 'canopylabs/orpheus-v1-english',
     custom: 'kokoro',
@@ -77,10 +77,10 @@ export const DEFAULT_SETTINGS: Settings = {
   ai: {
     provider: 'openai',
     models: {
-      openai: 'gpt-5-mini',
+      openai: 'gpt-6-luna',
       anthropic: 'claude-haiku-4-5',
-      gemini: 'gemini-2.5-flash',
-      openrouter: 'openrouter/auto',
+      gemini: 'gemini-3.5-flash-lite',
+      openrouter: 'openai/gpt-6-luna',
       groq: 'llama-3.3-70b-versatile',
       custom: 'llama3.2',
     },

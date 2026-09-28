@@ -1,0 +1,572 @@
+/* Reader: top bar, reading column, sentence and word highlighting, focus mode, jump pill,
+   selection toolbar, contents and display popovers, and the layout beside the AI panel.
+   The page itself scrolls (window), so the top bar is sticky and the player is fixed. */
+
+.reader {
+  --ai-w: 0px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--bg);
+}
+
+.reader--loading {
+  display: grid;
+  place-items: center;
+  color: var(--text-muted);
+}
+.reader--loading .ui-spinner {
+  width: 28px;
+  height: 28px;
+}
+
+/* ---------------------------------------------------------------------------
+   Top bar
+   --------------------------------------------------------------------------- */
+
+.reader-top {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  height: calc(var(--topbar-h) + env(safe-area-inset-top));
+  padding: env(safe-area-inset-top) max(var(--space-2), env(safe-area-inset-right)) 0 max(var(--space-2), env(safe-area-inset-left));
+  background: color-mix(in srgb, var(--bg) 84%, transparent);
+  -webkit-backdrop-filter: saturate(1.4) blur(16px);
+  backdrop-filter: saturate(1.4) blur(16px);
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+}
+.reader-top__title {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: min(640px, 100%);
+  height: 38px;
+  padding: 0 10px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  text-align: left;
+  transition: background var(--dur) var(--ease);
+}
+.reader-top__title span {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.reader-top__title:hover {
+  background: var(--bg-hover);
+}
+.reader-top__actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: none;
+  margin-left: auto;
+}
+@media (max-width: 379.98px) {
+  .reader-top__actions {
+    gap: 0;
+  }
+  .reader-top__actions .ui-icon-btn,
+  .reader-top > .ui-icon-btn {
+    width: 36px;
+    height: 36px;
+  }
+  .reader-top__title {
+    padding: 0 6px;
+    font-size: 14.5px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Reading column
+   --------------------------------------------------------------------------- */
+
+.reader__body {
+  flex: 1;
+  min-width: 0;
+}
+.reader__main {
+  min-width: 0;
+  /* Room for the fixed player, plus enough slack that the last lines can scroll up to eye level. */
+  padding: 0 max(var(--space-5), env(safe-area-inset-right)) calc(var(--player-h) + env(safe-area-inset-bottom) + 30vh)
+    max(var(--space-5), env(safe-area-inset-left));
+}
+@media (max-width: 479.98px) {
+  .reader__main {
+    padding-left: max(var(--space-4), env(safe-area-inset-left));
+    padding-right: max(var(--space-4), env(safe-area-inset-right));
+  }
+}
+
+.doc {
+  max-width: var(--reader-width, 68ch);
+  margin: 0 auto;
+  padding-top: clamp(var(--space-5), 7vh, 72px);
+  font-family: var(--reader-font, var(--font-serif));
+  font-size: var(--reader-size, 19px);
+  line-height: var(--reader-lh, 1.7);
+  color: var(--text);
+  overflow-wrap: break-word;
+  font-kerning: normal;
+  font-optical-sizing: auto;
+  font-variant-ligatures: common-ligatures;
+  hyphenate-limit-chars: 7 3 3;
+}
+@media (max-width: 599.98px) {
+  .doc {
+    -webkit-hyphens: auto;
+    hyphens: auto;
+  }
+}
+
+.doc__header {
+  margin-bottom: 2.2em;
+}
+.doc__header:not(:has(.doc__title)) {
+  margin-bottom: 0.6em;
+}
+.doc__title {
+  margin: 0 0 0.45em;
+  font-size: 2em;
+  font-weight: 600;
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  -webkit-hyphens: manual;
+  hyphens: manual;
+}
+.doc__subtitle {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: 13.5px;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+  color: var(--text-muted);
+}
+
+/* Blocks */
+.doc p {
+  margin: 0 0 1em;
+}
+.doc-h {
+  margin: 1.9em 0 0.55em;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+  -webkit-hyphens: manual;
+  hyphens: manual;
+}
+.doc__header + .doc-h,
+.doc > .doc-h:first-child {
+  margin-top: 0;
+}
+.doc-h1 {
+  font-size: 1.8em;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+.doc-h2 {
+  font-size: 1.42em;
+}
+.doc-h3 {
+  font-size: 1.2em;
+}
+.doc-h4 {
+  font-size: 1.05em;
+}
+.doc-h5,
+.doc-h6 {
+  font-size: 0.82em;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.doc blockquote {
+  margin: 1.4em 0;
+  padding: 0.15em 0 0.15em 1.1em;
+  border-left: 3px solid var(--accent-soft);
+  font-style: italic;
+  color: color-mix(in srgb, var(--text) 86%, var(--bg));
+}
+.doc pre {
+  margin: 1.4em 0;
+  padding: 0.9em 1.1em;
+  background: var(--bg-sunken);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.8em;
+  line-height: 1.6;
+  tab-size: 4;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  -webkit-hyphens: none;
+  hyphens: none;
+}
+.doc ul {
+  margin: 0 0 1em;
+  padding-left: 1.35em;
+}
+.doc li {
+  margin: 0.3em 0;
+  padding-left: 0.25em;
+}
+.doc li::marker {
+  color: var(--text-faint);
+}
+.doc ul + p,
+.doc pre + p,
+.doc blockquote + p {
+  margin-top: 0;
+}
+
+/* Skip layout and paint for blocks far off screen (big books stay smooth). The small inline
+   padding keeps sentence highlights from being clipped at the block edge. List items are left
+   out because their bullets sit outside the box. */
+.doc > p.blk,
+.doc > .doc-h,
+.doc > blockquote,
+.doc > pre {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 140px;
+}
+.doc > p.blk,
+.doc > .doc-h {
+  padding-inline: 0.25em;
+  margin-inline: -0.25em;
+}
+.doc > p.blk {
+  contain-intrinsic-size: auto 5lh;
+}
+.doc > .doc-h {
+  contain-intrinsic-size: auto 1.5lh;
+}
+
+.doc__more {
+  margin: 2em 0;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  text-align: center;
+  color: var(--text-faint);
+  animation: rd-breathe 1.6s ease-in-out infinite alternate;
+}
+.doc__end {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  margin: 3.5em 0 0;
+  font-family: var(--font-ui);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.doc__end::before,
+.doc__end::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--border-strong));
+}
+.doc__end::after {
+  background: linear-gradient(to left, transparent, var(--border-strong));
+}
+
+/* ---------------------------------------------------------------------------
+   Sentences and words
+   --------------------------------------------------------------------------- */
+
+/* Every sentence is clickable (jump there). Padding with an equal negative margin gives the
+   highlight breathing room without moving any text. */
+.doc .s {
+  cursor: pointer;
+  padding: 0.06em 0.14em;
+  margin: 0 -0.14em;
+  border-radius: 0.28em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  transition: background-color 200ms var(--ease), color 200ms var(--ease);
+}
+@media (hover: hover) {
+  .doc .s:hover {
+    background-color: var(--accent-softer);
+  }
+}
+.reader--hl-sentence .doc .s--active,
+.reader--hl-sentence .doc .s--active:hover {
+  background-color: var(--hl-sentence);
+}
+
+/* Current word (CSS Custom Highlight API; no DOM changes). */
+::highlight(earful-word) {
+  background-color: var(--hl-word-bg);
+  color: var(--hl-word-text);
+}
+
+/* Fallback for browsers without the Highlight API: the word is wrapped in <mark class="w">. */
+.doc mark.w {
+  padding: 0.02em 0.08em;
+  margin: 0 -0.08em;
+  border-radius: 0.2em;
+  background: var(--hl-word-bg);
+  color: var(--hl-word-text);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* Focus mode: everything but the sentence being read fades back. */
+.reader--focus .doc {
+  --dim: color-mix(in srgb, var(--text) 34%, var(--bg));
+}
+.reader--focus .doc .blk,
+.reader--focus .doc__header,
+.reader--focus .doc li::marker {
+  color: var(--dim);
+  transition: color 300ms var(--ease);
+}
+.reader--focus .doc .s--active {
+  color: var(--text);
+}
+@media (hover: hover) {
+  .reader--focus .doc .s:not(.s--active):hover {
+    color: color-mix(in srgb, var(--text) 70%, var(--bg));
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Jump to current
+   --------------------------------------------------------------------------- */
+
+.jump-pill {
+  position: fixed;
+  z-index: 45;
+  left: calc((100% - var(--ai-w)) / 2);
+  bottom: calc(var(--player-h) + env(safe-area-inset-bottom) + var(--space-4));
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 40px;
+  padding: 0 var(--space-4) 0 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--bg-elev) 92%, transparent);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  color: var(--text);
+  font-size: 13.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: var(--shadow);
+  transform: translateX(-50%);
+  animation: rd-pill-in 240ms var(--ease);
+  transition: background var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.jump-pill svg {
+  width: 17px;
+  height: 17px;
+  color: var(--accent);
+}
+.jump-pill:hover {
+  background: var(--bg-elev);
+  box-shadow: var(--shadow-lg);
+}
+.jump-pill:active {
+  transform: translateX(-50%) scale(0.97);
+}
+
+/* ---------------------------------------------------------------------------
+   Selection toolbar
+   --------------------------------------------------------------------------- */
+
+.sel-toolbar {
+  position: fixed;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  max-width: calc(100vw - 16px);
+  padding: 4px;
+  border-radius: var(--radius-full);
+  background: var(--text);
+  color: var(--bg);
+  box-shadow: var(--shadow-lg);
+  font-family: var(--font-ui);
+  animation: rd-pop 150ms var(--ease);
+  user-select: none;
+  -webkit-user-select: none;
+}
+.sel-toolbar button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 12px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: inherit;
+  font-size: 13.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: background var(--dur) var(--ease);
+}
+.sel-toolbar button:hover {
+  background: color-mix(in srgb, var(--bg) 16%, transparent);
+}
+.sel-toolbar button:active {
+  background: color-mix(in srgb, var(--bg) 24%, transparent);
+}
+.sel-toolbar button:focus-visible {
+  outline: 2px solid var(--bg);
+  outline-offset: -2px;
+  border-radius: var(--radius-full);
+}
+.sel-toolbar svg {
+  width: 15px;
+  height: 15px;
+  opacity: 0.85;
+}
+@media (max-width: 379.98px) {
+  .sel-toolbar button {
+    padding: 0 10px;
+    gap: 5px;
+    font-size: 13px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Popovers: contents and display settings
+   --------------------------------------------------------------------------- */
+
+.toc {
+  width: min(340px, calc(100vw - 32px));
+  padding-bottom: 2px;
+}
+.toc__item {
+  align-items: flex-start;
+  gap: 0;
+  padding: 8px 10px;
+  line-height: 1.35;
+}
+.toc__title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+.toc__item--l1 {
+  font-weight: 500;
+}
+.toc__item--l2 {
+  padding-left: 24px;
+}
+.toc__item--l3 {
+  padding-left: 38px;
+  font-size: 13.5px;
+  color: var(--text-muted);
+}
+.toc__item[aria-current='true'] {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.display-pop {
+  width: min(340px, calc(100vw - 32px));
+  padding: 10px 8px 4px;
+}
+
+/* ---------------------------------------------------------------------------
+   Beside the AI panel (the panel itself is fixed; see ai.css)
+   --------------------------------------------------------------------------- */
+
+/* The AI panel ends where the player starts, including the home-indicator area. */
+.reader__ai .ai-panel {
+  bottom: calc(var(--player-h) + env(safe-area-inset-bottom));
+}
+
+@media (min-width: 720px) {
+  .reader--ai {
+    --ai-w: min(420px, 100vw);
+  }
+  /* Keep the top bar buttons visible next to the panel. */
+  .reader--ai .reader-top {
+    padding-right: calc(var(--ai-w) + var(--space-2));
+  }
+  .reader--ai .reader-top__title {
+    max-width: 100%;
+  }
+}
+/* Wide screens: text and panel side by side. Narrower: the panel floats over the text. */
+@media (min-width: 1000px) {
+  .reader--ai .reader__main {
+    padding-right: calc(var(--ai-w) + var(--space-5));
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Motion and print
+   --------------------------------------------------------------------------- */
+
+@keyframes rd-pill-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 10px);
+  }
+}
+@keyframes rd-pop {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.96);
+  }
+}
+@keyframes rd-breathe {
+  from {
+    opacity: 0.45;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .doc__more,
+  .jump-pill,
+  .sel-toolbar {
+    animation: none;
+  }
+  .doc .s {
+    transition: none;
+  }
+}
+
+@media print {
+  .reader-top,
+  .jump-pill,
+  .sel-toolbar,
+  .reader__ai {
+    display: none !important;
+  }
+  .reader__main {
+    padding: 0;
+  }
+  .doc {
+    max-width: none;
+    color: #000;
+  }
+  .doc .s--active {
+    background: none !important;
+  }
+}

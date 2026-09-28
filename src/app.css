@@ -1,0 +1,390 @@
+/* App shell: page-level layout, drop overlay, crash screen, display controls and shared helpers.
+   Tokens live in index.css; primitives (ui-*) in components/ui/ui.css. */
+
+/* ---------------------------------------------------------------------------
+   Shell
+   --------------------------------------------------------------------------- */
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  scroll-padding-top: var(--topbar-h);
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  /* Guards against any stray wide element causing sideways scrolling on phones. */
+  overflow-x: clip;
+}
+
+#root {
+  isolation: isolate;
+  height: auto;
+  min-height: 100%;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+/* Lucide icons inherit the current colour and never shrink inside flex rows. */
+.lucide {
+  flex-shrink: 0;
+}
+
+/* ---------------------------------------------------------------------------
+   Helpers
+   --------------------------------------------------------------------------- */
+
+/* Hide on phones (keeps the icon, drops the text label). */
+@media (max-width: 559.98px) {
+  .hide-sm {
+    display: none !important;
+  }
+}
+
+/* Small heading at the top of popovers (sleep timer, contents...). */
+.pop-title {
+  margin: 0;
+  padding: 6px 10px 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+/* A tick shown next to the chosen option in a popover menu. */
+.ui-menu-item .pop-check {
+  color: var(--accent);
+}
+.ui-menu-item[aria-pressed='true'] {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* Disabled menu items should not look clickable. */
+.ui-menu-item:disabled {
+  cursor: not-allowed;
+}
+
+/* ---------------------------------------------------------------------------
+   Drop overlay (drag files anywhere)
+   --------------------------------------------------------------------------- */
+
+.drop-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  display: grid;
+  place-items: center;
+  padding: var(--space-5);
+  background: color-mix(in srgb, var(--bg) 72%, transparent);
+  -webkit-backdrop-filter: blur(8px) saturate(1.2);
+  backdrop-filter: blur(8px) saturate(1.2);
+  /* The window handles the drop; the overlay is purely visual. */
+  pointer-events: none;
+  animation: app-fade 160ms var(--ease);
+}
+.drop-overlay::before {
+  content: '';
+  position: absolute;
+  inset: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+  border: 2px dashed color-mix(in srgb, var(--accent) 55%, transparent);
+  border-radius: var(--radius-lg);
+  background: var(--accent-softer);
+}
+.drop-overlay__card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  width: min(420px, 100%);
+  padding: var(--space-6) var(--space-5);
+  text-align: center;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  animation: app-pop 220ms var(--ease);
+}
+.drop-overlay__card svg {
+  width: 56px;
+  height: 56px;
+  padding: 14px;
+  margin-bottom: var(--space-2);
+  border-radius: 18px;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  box-shadow: 0 10px 24px -10px var(--accent);
+  animation: app-bob 1.4s var(--ease) infinite alternate;
+}
+.drop-overlay__title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+.drop-overlay__hint {
+  margin: 0;
+  max-width: 32ch;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+/* ---------------------------------------------------------------------------
+   Crash screen (error boundary)
+   --------------------------------------------------------------------------- */
+
+.crash {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: max(var(--space-5), env(safe-area-inset-top)) var(--space-4) max(var(--space-5), env(safe-area-inset-bottom));
+}
+.crash__card {
+  width: min(520px, 100%);
+  padding: var(--space-6);
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  animation: app-pop 220ms var(--ease);
+}
+.crash__card h1 {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-serif);
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+}
+.crash__card > p {
+  margin: 0 0 var(--space-5);
+  color: var(--text-muted);
+  font-size: 15px;
+}
+.crash__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.crash__details {
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.crash__details summary {
+  cursor: pointer;
+  width: fit-content;
+  font-weight: 500;
+  color: var(--text);
+  border-radius: 4px;
+}
+.crash__details summary::marker {
+  color: var(--text-faint);
+}
+.crash__details pre {
+  margin: var(--space-3) 0;
+  padding: var(--space-3);
+  max-height: 220px;
+  overflow: auto;
+  background: var(--bg-sunken);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.crash__details p {
+  margin: 0;
+}
+@media (max-width: 479.98px) {
+  .crash__card {
+    padding: var(--space-5);
+  }
+  .crash__actions .ui-btn {
+    flex: 1 1 100%;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Display controls (reader "Aa" popover and Settings › Appearance)
+   --------------------------------------------------------------------------- */
+
+.display-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-width: 0;
+}
+.display-controls--compact {
+  gap: var(--space-4);
+}
+.dc-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-3);
+  min-width: 0;
+}
+.dc-row--stack {
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: stretch;
+}
+.dc-label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+.dc-value {
+  font-weight: 500;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.dc-seg {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.dc-seg svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Theme switch fills the width in the compact popover. */
+.display-controls--compact .dc-row:first-child {
+  flex-direction: column;
+  align-items: stretch;
+}
+.display-controls--compact .ui-seg {
+  display: flex;
+}
+.display-controls--compact .ui-seg button {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 6px 4px;
+  justify-content: center;
+}
+.display-controls--compact .dc-seg {
+  justify-content: center;
+  gap: 5px;
+}
+.ui-seg .dc-seg {
+  pointer-events: none;
+}
+
+.dc-fonts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(66px, 1fr));
+  gap: 6px;
+}
+.dc-font {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-width: 0;
+  padding: 10px 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-elev);
+  color: var(--text);
+  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease), color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.dc-font:hover {
+  border-color: var(--border-strong);
+  background: var(--bg-hover);
+}
+.dc-font[aria-pressed='true'] {
+  border-color: var(--accent);
+  background: var(--accent-softer);
+  color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+.dc-font__sample {
+  font-family: var(--f, var(--font-serif));
+  font-size: 21px;
+  line-height: 1.2;
+}
+.dc-font__label {
+  max-width: 100%;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dc-font[aria-pressed='true'] .dc-font__label {
+  color: inherit;
+}
+
+.dc-slider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.dc-slider .ui-slider {
+  flex: 1;
+  min-width: 0;
+}
+
+.dc-switches {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border);
+}
+
+/* ---------------------------------------------------------------------------
+   Motion
+   --------------------------------------------------------------------------- */
+
+@keyframes app-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes app-pop {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+}
+@keyframes app-bob {
+  to {
+    transform: translateY(-5px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drop-overlay__card svg {
+    animation: none;
+  }
+}

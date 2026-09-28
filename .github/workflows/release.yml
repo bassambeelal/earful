@@ -1,0 +1,31 @@
+name: Release
+
+# Push a tag like v1.0.0 to build a self-hostable zip and attach it to a GitHub release.
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # Relative base so the build works from any folder or static host.
+      - run: npm run build
+        env:
+          BASE_PATH: ./
+      - run: cd dist && zip -r ../earful-web-${{ github.ref_name }}.zip .
+      - run: |
+          gh release view "$TAG" >/dev/null 2>&1 || gh release create "$TAG" --title "Earful $TAG" --generate-notes
+          gh release upload "$TAG" "earful-web-$TAG.zip" --clobber
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}

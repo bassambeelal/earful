@@ -1,0 +1,301 @@
+/* Settings dialog. Class prefix: set- */
+
+/* Tabs stay visible while the panel scrolls */
+.set-tabs {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  margin: 0 calc(-1 * var(--space-5));
+  padding: 0 var(--space-5);
+  background: var(--bg-elev);
+}
+.set-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding-top: var(--space-2);
+  min-width: 0;
+}
+.set-panel > .ui-callout {
+  margin-top: var(--space-2);
+}
+
+/* A titled group of settings */
+.set-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4) 0;
+  border-bottom: 1px solid var(--border);
+  scroll-margin-top: 60px;
+  border-radius: var(--radius-sm);
+  transition: background-color 600ms var(--ease), box-shadow 600ms var(--ease);
+  min-width: 0;
+}
+.set-panel > .set-group:last-child {
+  border-bottom: none;
+}
+.set-group__head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+}
+.set-group__title {
+  margin: 0;
+  font-size: 15.5px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+}
+.set-group__badges {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.set-group__desc {
+  margin: -4px 0 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+/* Briefly highlight a section opened from elsewhere in the app */
+.set-flash {
+  background-color: var(--accent-softer);
+  box-shadow: 0 0 0 8px var(--accent-softer);
+}
+
+.set-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: flex-end;
+}
+.set-row > .ui-field {
+  flex: 1 1 240px;
+  min-width: 0;
+}
+
+.set-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.set-muted {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+.set-muted strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.set-callout-text {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.set-price {
+  font-size: 12px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.set-hint-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px var(--space-3);
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.set-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--accent);
+  font-weight: 500;
+  text-decoration: none;
+}
+.set-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.set-link svg {
+  width: 13px;
+  height: 13px;
+  flex: none;
+}
+
+/* Key fields: monospace so keys are easy to check when shown */
+.set-key {
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+}
+
+/* Test button + inline result */
+.set-test {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.set-result {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.set-result svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  margin-top: 1px;
+}
+.set-result--ok {
+  color: var(--success);
+}
+.set-result--err {
+  color: var(--danger);
+}
+
+/* Status lines (natural voices, Chrome AI) */
+.set-status {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+.set-status .ui-spinner {
+  width: 14px;
+  height: 14px;
+}
+.set-kokoro__progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.set-seg-wrap .ui-seg {
+  flex-wrap: wrap;
+  max-width: 100%;
+}
+
+.set-switches {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.set-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+.set-value {
+  font-weight: 500;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Key/value facts (storage) */
+.set-kv {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-6);
+  margin: 0;
+}
+.set-kv > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.set-kv dt {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-faint);
+}
+.set-kv dd {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.set-kv dd .set-muted {
+  font-weight: 400;
+}
+
+/* About */
+.set-about {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding-top: var(--space-3);
+}
+.set-about__logo {
+  flex: none;
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+}
+.set-about__name {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.set-about__lead {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+  max-width: 62ch;
+}
+.set-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+  font-size: 14px;
+}
+.set-list {
+  margin: 0;
+  padding-left: 1.2em;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.set-list--credits .set-link {
+  font-size: 14px;
+}
+
+@media (max-width: 640px) {
+  .set-group {
+    scroll-margin-top: 52px;
+  }
+  .set-kv {
+    gap: var(--space-3) var(--space-5);
+  }
+  .set-about__name {
+    font-size: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .set-group {
+    transition: none;
+  }
+}

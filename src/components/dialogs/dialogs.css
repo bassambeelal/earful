@@ -1,0 +1,285 @@
+/* App dialogs (export, paste, import progress, shortcuts, rename/delete). Class prefix: dlg- */
+
+.dlg-text {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+.dlg-text + .dlg-text {
+  margin-top: var(--space-3);
+}
+.dlg-muted {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.dlg-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.dlg-stack--tight {
+  gap: var(--space-3);
+}
+
+.dlg-center {
+  display: grid;
+  place-items: center;
+  padding: var(--space-6) 0;
+  color: var(--text-muted);
+}
+
+/* Subtitle line with the document title */
+.dlg-doc {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-muted);
+  min-width: 0;
+}
+.dlg-doc svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+.dlg-doc strong {
+  color: var(--text);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Segmented controls inside fields should wrap on small screens */
+.dlg-seg-wrap .ui-seg {
+  flex-wrap: wrap;
+  max-width: 100%;
+}
+.dlg-seg-wrap .ui-seg button:disabled,
+.dlg-seg-wrap .ui-seg button[aria-disabled='true'] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.dlg-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-4);
+}
+
+.dlg-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.dlg-callout-text {
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Export: estimate summary */
+.dlg-estimate {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius);
+  background: var(--bg-sunken);
+  border: 1px solid var(--border);
+}
+.dlg-estimate > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.dlg-estimate dt {
+  font-size: 11.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-faint);
+}
+.dlg-estimate dd {
+  margin: 0;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Progress blocks (export + import) */
+.dlg-progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.dlg-progress__row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  font-size: 13.5px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.dlg-progress__row strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.dlg-done {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--success) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--success) 25%, transparent);
+  font-size: 14px;
+}
+.dlg-done > svg {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  color: var(--success);
+  margin-top: 1px;
+}
+.dlg-done p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.dlg-error {
+  margin: 0;
+  font-size: 13px;
+  color: var(--danger);
+  line-height: 1.45;
+}
+
+/* Paste dialog */
+.dlg-paste__text {
+  min-height: 220px;
+  font-size: 15px;
+}
+.dlg-paste__meta {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+.dlg-or {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: var(--space-2) 0 0;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-faint);
+}
+.dlg-or::before,
+.dlg-or::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.dlg-link-row {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+.dlg-link-row > .ui-input {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Import progress */
+.dlg-import__file {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  font-weight: 600;
+  font-size: 15px;
+  min-width: 0;
+}
+.dlg-import__file svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  color: var(--accent);
+}
+.dlg-import__file span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Keyboard shortcuts */
+.dlg-keys {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.dlg-keys th,
+.dlg-keys td {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: middle;
+}
+.dlg-keys tr:last-child th,
+.dlg-keys tr:last-child td {
+  border-bottom: none;
+}
+.dlg-keys thead th {
+  padding-top: 0;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-faint);
+}
+.dlg-keys td:first-child {
+  white-space: nowrap;
+  padding-right: var(--space-4);
+}
+.dlg-keys tbody th {
+  font-weight: 400;
+  color: var(--text);
+}
+.dlg-keys__or {
+  margin: 0 6px;
+  font-size: 12px;
+  color: var(--text-faint);
+}
+.dlg-keys__plus {
+  margin: 0 3px;
+  color: var(--text-faint);
+}
+
+@media (max-width: 640px) {
+  .dlg-link-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .dlg-paste__text {
+    min-height: 160px;
+  }
+  .dlg-keys td:first-child {
+    white-space: normal;
+  }
+}

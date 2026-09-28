@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <title>Earful</title>
+  <defs>
+    <linearGradient id="earful-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7b6df6"/>
+      <stop offset="0.55" stop-color="#5b4fd6"/>
+      <stop offset="1" stop-color="#3f33b3"/>
+    </linearGradient>
+    <radialGradient id="earful-glow" cx="0.22" cy="0.12" r="0.85">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.30"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="512" height="512" rx="116" fill="url(#earful-bg)"/>
+  <rect width="512" height="512" rx="116" fill="url(#earful-glow)"/>
+  <g transform="translate(-26 -6)" fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round">
+    <path stroke-width="40" d="M128 214 A100 100 0 1 1 328 214 C328 296 244 304 244 364 A50 50 0 0 1 144 364"/>
+    <path stroke-width="32" d="M270 214 A42 42 0 0 0 186 214 V232 A30 30 0 0 1 186 292"/>
+    <path stroke-width="30" stroke-opacity="0.9" d="M366 166 A150 150 0 0 1 366 342"/>
+    <path stroke-width="30" stroke-opacity="0.55" d="M418 132 A205 205 0 0 1 418 376"/>
+  </g>
+</svg>
